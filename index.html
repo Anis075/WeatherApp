@@ -1,45 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Weather App</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-
-<body>
-  <div class="card">
-    <div class="search">
-      <input type="text" placeholder="Enter City Name" spellcheck="false" />
-      <button><img src="./Assest/Search.svg" /></button>
-    </div>
-    <div class="weather">
-      <img src="./Assest/Rain.png" class="weather-icon" />
-      <h1 class="temp">22°C</h1>
-      <h2 class="city">New York</h2>
-      <div class="details">
-        <div class="col">
-          <img src="./Assest/Humadity.png" class="humidity" />
-          <div>
-            <p class="humidity">50%</p>
-            <p>Humidity</p>
+  <body>
+    <div class="card">
+      <div class="search">
+        <input
+          type="text"
+          id="city-input"
+          placeholder="Enter City Name"
+          spellcheck="false"
+        />
+        <button onclick="checkWeather()">
+          <img src="./Assest/Search.svg" />
+        </button>
+      </div>
+      <div class="weather">
+        <img src="./Assest/Rain.png" class="weather-icon" />
+        <h1 class="temp">--°C</h1>
+        <h2 class="city">City</h2>
+        <div class="details">
+          <div class="col">
+            <img src="./Assest/Humidity.png" />
+            <div>
+              <p class="humidity-text">--%</p>
+              <p>Humidity</p>
+            </div>
           </div>
-        </div>
-        <div class="col">
-          <img src="./Assest/Wind.png" class="wind" />
-          <div>
-            <p class="wind">15 km/h</p>
-            <p>Wind Speed</p>
+          <div class="col">
+            <img src="./Assest/Wind.png" />
+            <div>
+              <p class="wind-text">-- km/h</p>
+              <p>Wind Speed</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-</body>
-<script>
-  async function checkWeather() {
-    const res = await fetch('http://api.openweathermap.org/geo/1.0/direct?q=wah cantt appid=ea0fb829add32d745b35e08e6c7886a6')
-  }
-</script>
 
+    <script>
+      async function checkWeather() {
+        const city = document.getElementById("city-input").value;
+        if (!city) {
+          alert("Please enter a city name.");
+          return;
+        }
+
+        const apiKey = "ea0fb829add32d745b35e08e6c7886a6";
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          console.log(data);
+
+          if (data.cod === "404") {
+            alert("City not found!");
+            return;
+          }
+
+          document.querySelector(".city").innerText = data.name;
+          document.querySelector(".temp").innerText = `${Math.round(
+            data.main.temp
+          )}°C`;
+          document.querySelector(
+            ".humidity-text"
+          ).innerText = `${data.main.humidity}%`;
+          document.querySelector(
+            ".wind-text"
+          ).innerText = `${data.wind.speed} km/h`;
+        } catch (error) {
+          console.error("Error fetching weather data:", error);
+          alert("Failed to fetch weather data. Please try again.");
+        }
+      }
+      checkWeather();
+    </script>
+  </body>
 </html>
